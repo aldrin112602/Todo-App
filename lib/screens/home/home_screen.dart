@@ -1,8 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import '../../widgets/task_item.dart';
+
 import '../../providers/task_provider.dart';
 import '../add_task/add_task_screen.dart';
+
+import '../../widgets/search_box.dart';
+import '../../widgets/task_item.dart';
 
 class HomeScreen extends ConsumerStatefulWidget {
   const HomeScreen({super.key});
@@ -50,28 +53,10 @@ class HomeScreenState extends ConsumerState<HomeScreen> {
         padding: const EdgeInsets.symmetric(horizontal: 15),
         child: Column(
           children: [
-            Container(
-              padding: const EdgeInsets.symmetric(horizontal: 15),
-              decoration: BoxDecoration(
-                color: Colors.white,
-                borderRadius: BorderRadius.circular(20),
-              ),
-              child: TextField(
-                controller: _searchController,
-                decoration: const InputDecoration(
-                  contentPadding: EdgeInsets.all(0),
-                  prefixIcon: Icon(
-                    Icons.search, 
-                    color: Color.fromARGB(31, 17, 17, 17), size: 20,
-                  ),
-                  prefixIconConstraints: BoxConstraints(maxHeight: 20, minWidth: 25),
-                  border: InputBorder.none,
-                  hintText: 'Search',
-                  hintStyle: TextStyle(color: Color.fromARGB(31, 58, 57, 57)),
-                ),
-              ),
+            SearchBox(
+              controller: _searchController,
+              onSearchChanged: _onSearchChanged,
             ),
-            // Use Expanded here to allow ListView to take remaining space
             Expanded(
               child: ListView.builder(
                 itemCount: filteredTaskList.length,

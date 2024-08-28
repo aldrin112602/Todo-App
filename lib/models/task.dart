@@ -7,5 +7,5 @@ class Task {
     required this.id, 
     required this.title, 
     this.isCompleted = false
-    });
+  });
 }

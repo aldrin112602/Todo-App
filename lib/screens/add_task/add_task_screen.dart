@@ -21,16 +21,10 @@ class AddTaskScreen extends ConsumerWidget {
               
               controller: _controller,
               decoration: const InputDecoration(
-                  
                   contentPadding: EdgeInsets.all(0),
-                  prefixIcon: Icon(
-                    Icons.add_to_queue, 
-                    color: Color.fromARGB(31, 17, 17, 17), size: 20,
-                  ),
                   prefixIconConstraints: BoxConstraints(maxHeight: 20, minWidth: 25),
-                  border: InputBorder.none,
-                  hintText: '  Enter new task..',
-                  hintStyle: TextStyle(color: Color.fromARGB(31, 58, 57, 57)),
+                  
+                  labelText: 'Enter new task',
                 ),
             ),
             const SizedBox(height: 20),
