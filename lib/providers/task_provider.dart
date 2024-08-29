@@ -1,47 +1,73 @@
+
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../models/task.dart';
+import '../services/task_service.dart';
 
 class TaskNotifier extends StateNotifier<List<Task>> {
-  TaskNotifier()
-      : super([
-          Task(id: '1', title: 'Buy groceries'),
-          Task(id: '2', title: 'Walk the dog'),
-          Task(id: '3', title: 'Read a book'),
-        ]);
+  final TaskService _taskService;
 
-  void addTask(String title) {
-    state = [
-      ...state,
-      Task(id: DateTime.now().toString(), title: title),
-    ];
+  TaskNotifier(this._taskService) : super([]) {
+    _fetchTasks();
+
   }
 
-  void toggleTaskCompletion(String id) {
-    state = [
-      for (final task in state)
-        if (task.id == id)
-          Task(id: task.id, title: task.title, isCompleted: !task.isCompleted)
-        else
-          task,
-    ];
+  
+
+  Future<void> _fetchTasks() async {
+    state = await _taskService.fetchTasks();
   }
 
-  void deleteTask(String id) {
-    state = state.where((task) => task.id != id).toList();
+  Future<void> addTask(String title) async {
+    final newTask = await _taskService.addTask(title);
+    if (newTask != null) {
+      state = [...state, newTask];
+    }
   }
 
+  Future<void> toggleTaskCompletion(int id) async {
+    final task = state.firstWhere((task) => task.id == id);
+    final updatedTask = Task(
+      id: task.id,
+      title: task.title,
+      isCompleted: !task.isCompleted,
+    );
 
-  void editTask(String id, String newTitle) {
-    state = [
-      for (final task in state)
-        if (task.id == id)
-          Task(id: task.id, title: newTitle, isCompleted: task.isCompleted)
-        else
-          task,
-    ];
+    final success = await _taskService.updateTask(id, updatedTask);
+    if (success) {
+      state = [
+        for (final task in state)
+          if (task.id == id) updatedTask else task,
+      ];
+    }
+  }
+
+  Future<void> editTask(int id, String newTitle) async {
+    final task = state.firstWhere((task) => task.id == id);
+    final updatedTask = Task(
+      id: task.id,
+      title: newTitle,
+      isCompleted: task.isCompleted,
+    );
+
+    final success = await _taskService.updateTask(id, updatedTask);
+    if (success) {
+      state = [
+        for (final task in state)
+          if (task.id == id) updatedTask else task,
+      ];
+    }
+  }
+
+  Future<void> deleteTask(int id) async {
+    final success = await _taskService.deleteTask(id);
+    if (success) {
+      state = state.where((task) => task.id != id).toList();
+    }
   }
 }
 
+// Provider for TaskNotifier
 final taskProvider = StateNotifierProvider<TaskNotifier, List<Task>>((ref) {
-  return TaskNotifier();
+  final taskService = TaskService();
+  return TaskNotifier(taskService);
 });
