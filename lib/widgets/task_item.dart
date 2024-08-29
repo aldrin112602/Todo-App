@@ -8,7 +8,7 @@ import '../models/task.dart';
 class TaskItem extends ConsumerWidget {
   final Task task;
 
-  TaskItem({required this.task});
+  const TaskItem({super.key, required this.task});
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -18,7 +18,7 @@ class TaskItem extends ConsumerWidget {
         mainAxisSize: MainAxisSize.min,
         children: [
           IconButton(
-            icon: Icon(task.isCompleted ? Icons.check_box : Icons.check_box_outline_blank),
+            icon: Icon(task.isCompleted == 1 ? Icons.check_box : Icons.check_box_outline_blank),
             onPressed: () => ref.read(taskProvider.notifier).toggleTaskCompletion(task.id),
           ),
           IconButton(

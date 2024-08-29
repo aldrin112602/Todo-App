@@ -11,8 +11,6 @@ class TaskNotifier extends StateNotifier<List<Task>> {
 
   }
 
-  
-
   Future<void> _fetchTasks() async {
     state = await _taskService.fetchTasks();
   }
@@ -29,7 +27,7 @@ class TaskNotifier extends StateNotifier<List<Task>> {
     final updatedTask = Task(
       id: task.id,
       title: task.title,
-      isCompleted: !task.isCompleted,
+      isCompleted: task.isCompleted == 1 ? 0 : 1,
     );
 
     final success = await _taskService.updateTask(id, updatedTask);

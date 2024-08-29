@@ -1,19 +1,20 @@
+
 class Task {
   final int id;
   final String title;
-  final bool isCompleted;
+  final int isCompleted;
 
   Task({
     required this.id,
     required this.title,
-    this.isCompleted = false,
+    this.isCompleted = 0,
   });
 
   factory Task.fromJson(Map<String, dynamic> json) {
     return Task(
       id: json['id'] as int,
       title: json['title'] as String,
-      isCompleted: json['isCompleted'] as bool? ?? false,
+      isCompleted: json['isCompleted'] as int,
     );
   }
 

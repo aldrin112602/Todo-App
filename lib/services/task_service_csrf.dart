@@ -13,15 +13,13 @@ class TaskService {
     ),
   );
 
-  
+  String? _csrfToken; // To store the CSRF token
 
-  Future<void> initializeCsrfToken() async {
+  Future<void> _fetchCsrfToken() async {
     try {
-      Response response = await _dio
-          .get('/getCsrftoken');
-      final csrfToken = response.data['csrf_token'];
-      _dio.options.headers['X-CSRF-TOKEN'] = csrfToken;
-      _dio.options.headers['Cookie'] = 'XSRF-TOKEN=$csrfToken';
+      Response response = await _dio.get('/getCsrftoken');
+      _csrfToken = response.data['csrf_token'];
+      _dio.options.headers['X-CSRF-TOKEN'] = _csrfToken;
     } catch (e) {
       print('Error fetching CSRF token: $e');
     }
@@ -29,7 +27,6 @@ class TaskService {
 
   Future<List<Task>> fetchTasks() async {
     try {
-      await initializeCsrfToken(); // Ensure CSRF token is initialized before making requests
       Response response = await _dio.get('/tasks');
       List<dynamic> data = response.data;
       return data.map((json) => Task.fromJson(json)).toList();
@@ -41,8 +38,15 @@ class TaskService {
 
   Future<Task?> addTask(String title) async {
     try {
-      await initializeCsrfToken();
-      Response response = await _dio.post('/tasks', data: {'title': title});
+      if (_csrfToken == null) {
+        await _fetchCsrfToken();
+      }
+
+      Response response = await _dio.post(
+        '/tasks',
+        data: {'title': title},
+        options: Options(headers: {'X-CSRF-TOKEN': _csrfToken}),
+      );
       return Task.fromJson(response.data);
     } catch (e) {
       print('Error adding task: $e');
@@ -52,8 +56,13 @@ class TaskService {
 
   Future<bool> updateTask(int id, Task task) async {
     try {
-      await initializeCsrfToken();
-      await _dio.put('/tasks/$id', data: task.toJson());
+      if (_csrfToken == null) {
+        await _fetchCsrfToken();
+      }
+
+      await _dio.put('/tasks/$id',
+          data: task.toJson(),
+          options: Options(headers: {'X-CSRF-TOKEN': _csrfToken}));
       return true;
     } catch (e) {
       print('Error updating task: $e');
@@ -63,8 +72,14 @@ class TaskService {
 
   Future<bool> deleteTask(int id) async {
     try {
-      await initializeCsrfToken();
-      await _dio.delete('/tasks/$id');
+      if (_csrfToken == null) {
+        await _fetchCsrfToken();
+      }
+
+      await _dio.delete(
+        '/tasks/$id',
+        options: Options(headers: {'X-CSRF-TOKEN': _csrfToken}),
+      );
       return true;
     } catch (e) {
       print('Error deleting task: $e');
