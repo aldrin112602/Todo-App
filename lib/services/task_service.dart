@@ -4,7 +4,7 @@ import '../models/task.dart';
 class TaskService {
   final Dio _dio = Dio(
     BaseOptions(
-      baseUrl: 'http://192.168.1.89:3000/api',
+      baseUrl: 'http://127.0.0.1:3000/api',
       connectTimeout: const Duration(seconds: 60),
       receiveTimeout: const Duration(seconds: 60),
       headers: {
