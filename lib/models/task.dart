@@ -14,7 +14,7 @@ class Task {
     return Task(
       id: json['id'] as int,
       title: json['title'] as String,
-      isCompleted: json['isCompleted'] as int,
+      isCompleted: json['is_completed'] ?? 0,
     );
   }
 
