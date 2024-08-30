@@ -3,10 +3,10 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../providers/task_provider.dart';
 import '../add_task/add_task_screen.dart';
-
 import '../../widgets/search_box.dart';
 import '../../widgets/task_item.dart';
-
+import '../../widgets/shimmer_task_item.dart';
+import '../../widgets/shimmer_search_box.dart';
 class HomeScreen extends ConsumerStatefulWidget {
   const HomeScreen({super.key});
 
@@ -37,48 +37,58 @@ class HomeScreenState extends ConsumerState<HomeScreen> {
   }
 
   @override
-  Widget build(BuildContext context) {
-    final taskList = ref.watch(taskProvider);
+Widget build(BuildContext context) {
+  final taskList = ref.watch(taskProvider);
 
-    // Filter tasks based on the search text
-    final filteredTaskList = taskList.where((task) {
-      return task.title.toLowerCase().contains(_searchText.toLowerCase());
-    }).toList();
+  // Display shimmer effect when tasks are loading
+  final isLoading = taskList.isEmpty;
 
-    return Scaffold(
-      appBar: AppBar(
-        title: const Text('Todo List'),
+  final filteredTaskList = taskList.where((task) {
+    return task.title.toLowerCase().contains(_searchText.toLowerCase());
+  }).toList();
+
+  return Scaffold(
+    appBar: AppBar(
+      title: const Text('Todo List'),
+    ),
+    body: Container(
+      padding: const EdgeInsets.symmetric(horizontal: 15),
+      child: Column(
+        children: [
+          isLoading
+              ? const ShimmerSearchBox() // Show shimmer while loading
+              : SearchBox(
+                  controller: _searchController,
+                  onSearchChanged: _onSearchChanged,
+                ),
+          Expanded(
+            child: isLoading
+                ? ListView.builder(
+                    itemCount: 20,
+                    itemBuilder: (context, index) => const ShimmerTaskItem(),
+                  )
+                : ListView.builder(
+                    itemCount: filteredTaskList.length,
+                    itemBuilder: (context, index) {
+                      final task = filteredTaskList[index];
+                      return TaskItem(task: task);
+                    },
+                  ),
+          ),
+        ],
       ),
-      body: Container(
-        padding: const EdgeInsets.symmetric(horizontal: 15),
-        child: Column(
-          children: [
-            SearchBox(
-              controller: _searchController,
-              onSearchChanged: _onSearchChanged,
-            ),
-            Expanded(
-              child: ListView.builder(
-                itemCount: filteredTaskList.length,
-                itemBuilder: (context, index) {
-                  final task = filteredTaskList[index];
-                  return TaskItem(task: task);
-                },
-              ),
-            ),
-          ],
-        ),
-      ),
-      floatingActionButton: FloatingActionButton(
-        onPressed: () {
-          Navigator.of(context).push(
-            MaterialPageRoute(
-              builder: (context) => AddTaskScreen(),
-            ),
-          );
-        },
-        child: const Icon(Icons.add),
-      ),
-    );
-  }
+    ),
+    floatingActionButton: FloatingActionButton(
+      onPressed: () {
+        Navigator.of(context).push(
+          MaterialPageRoute(
+            builder: (context) => AddTaskScreen(),
+          ),
+        );
+      },
+      child: const Icon(Icons.add),
+    ),
+  );
+}
+
 }
