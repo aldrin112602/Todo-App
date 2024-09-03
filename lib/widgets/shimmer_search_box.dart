@@ -12,8 +12,8 @@ class ShimmerSearchBox extends StatelessWidget {
       baseColor: Colors.grey[300]!,
       highlightColor: Colors.grey[100]!,
       child: Container(
-        width: screenWidth * 0.9, // Width to fit most of the screen width
-        height: 50, // Height to match the search box
+        width: screenWidth * 0.9,
+        height: 50,
         decoration: BoxDecoration(
           color: Colors.white,
           borderRadius: BorderRadius.circular(20),

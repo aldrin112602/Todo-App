@@ -19,7 +19,6 @@ class TaskService {
       List<dynamic> data = response.data;
       return data.map((json) => Task.fromJson(json)).toList();
     } catch (e) {
-      print('Error fetching tasks: $e');
       return [];
     }
   }
@@ -29,7 +28,6 @@ class TaskService {
       Response response = await _dio.post('/tasks', data: {'title': title});
       return Task.fromJson(response.data);
     } catch (e) {
-      print('Error adding task: $e');
       return null;
     }
   }
@@ -39,7 +37,6 @@ class TaskService {
       await _dio.put('/tasks/$id', data: task.toJson());
       return true;
     } catch (e) {
-      print('Error updating task: $e');
       return false;
     }
   }
@@ -49,7 +46,6 @@ class TaskService {
       await _dio.delete('/tasks/$id');
       return true;
     } catch (e) {
-      print('Error deleting task: $e');
       return false;
     }
   }
